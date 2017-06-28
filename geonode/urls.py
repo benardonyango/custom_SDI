@@ -51,10 +51,17 @@ sitemaps = {
 urlpatterns = patterns('',
 
                        # Static pages
-                       url(r'^/?$', TemplateView.as_view(template_name='index.html'), name='home'),
-                       url(r'^help/$', TemplateView.as_view(template_name='help.html'), name='help'),
-                       url(r'^developer/$', TemplateView.as_view(template_name='developer.html'), name='developer'),
-                       url(r'^about/$', TemplateView.as_view(template_name='about.html'), name='about'),
+                       url(r'^/?$',
+                           TemplateView.as_view(template_name='index.html'),
+                           name='home'),
+                       url(r'^help/$',
+                           TemplateView.as_view(template_name='help.html'),
+                           name='help'),
+                       url(r'^developer/$', TemplateView.as_view(
+                           template_name='developer.html'), name='developer'),
+                       url(r'^about/$',
+                           TemplateView.as_view(template_name='about.html'),
+                           name='about'),
 
                        # Layer views
                        (r'^layers/', include('geonode.layers.urls')),
@@ -66,16 +73,20 @@ urlpatterns = patterns('',
                        (r'^catalogue/', include('geonode.catalogue.urls')),
 
                        # data.json
-                       url(r'^data.json$', 'geonode.catalogue.views.data_json', name='data_json'),
+                       url(r'^data.json$', 'geonode.catalogue.views.data_json',
+                           name='data_json'),
 
                        # ident
-                       url(r'^ident.json$', 'geonode.views.ident_json', name='ident_json'),
+                       url(r'^ident.json$', 'geonode.views.ident_json',
+                           name='ident_json'),
 
                        # h keywords
-                       url(r'^h_keywords_api$', 'geonode.views.h_keywords', name='h_keywords_api'),
+                       url(r'^h_keywords_api$', 'geonode.views.h_keywords',
+                           name='h_keywords_api'),
 
                        # Search views
-                       url(r'^search/$', TemplateView.as_view(template_name='search/search.html'), name='search'),
+                       url(r'^search/$', TemplateView.as_view(
+                           template_name='search/search.html'), name='search'),
 
                        # Social views
                        (r"^account/", include("account.urls")),
@@ -90,15 +101,24 @@ urlpatterns = patterns('',
                        (r'^security/', include('geonode.security.urls')),
 
                        # Accounts
-                       url(r'^account/ajax_login$', 'geonode.views.ajax_login', name='account_ajax_login'),
-                       url(r'^account/ajax_lookup$', 'geonode.views.ajax_lookup', name='account_ajax_lookup'),
+                       url(r'^account/ajax_login$', 'geonode.views.ajax_login',
+                           name='account_ajax_login'),
+                       url(r'^account/ajax_lookup$',
+                           'geonode.views.ajax_lookup',
+                           name='account_ajax_lookup'),
 
                        # Meta
-                       url(r'^lang\.js$', TemplateView.as_view(template_name='lang.js', content_type='text/javascript'),
+                       url(r'^lang\.js$', TemplateView.as_view(
+                           template_name='lang.js',
+                           content_type='text/javascript'),
                            name='lang'),
 
-                       url(r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict, name='jscat'),
-                       url(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps},
+                       url(r'^jsi18n/$',
+                           'django.views.i18n.javascript_catalog',
+                           js_info_dict, name='jscat'),
+                       url(r'^sitemap\.xml$',
+                           'django.contrib.sitemaps.views.sitemap',
+                           {'sitemaps': sitemaps},
                            name='sitemap'),
 
                        (r'^i18n/', include('django.conf.urls.i18n')),
@@ -107,12 +127,15 @@ urlpatterns = patterns('',
                        (r'^groups/', include('geonode.groups.urls')),
                        (r'^documents/', include('geonode.documents.urls')),
                        (r'^services/', include('geonode.services.urls')),
+                       (r'^projects/', include('geonode.projects.urls')),
 
                        # OAuth Provider
-                       url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+                       url(r'^o/', include('oauth2_provider.urls',
+                                           namespace='oauth2_provider')),
 
                        # Api Views
-                       url(r'^api/o/v4/tokeninfo', verify_token, name='tokeninfo'),
+                       url(r'^api/o/v4/tokeninfo',
+                           verify_token, name='tokeninfo'),
                        url(r'^api/roles', roles, name='roles'),
                        url(r'^api/adminRole', admin_role, name='adminRole'),
                        url(r'^api/users', users, name='users'),
@@ -121,12 +144,14 @@ urlpatterns = patterns('',
 
 if "geonode.contrib.dynamic" in settings.INSTALLED_APPS:
     urlpatterns += patterns('',
-                            (r'^dynamic/', include('geonode.contrib.dynamic.urls')),
+                            (r'^dynamic/',
+                             include('geonode.contrib.dynamic.urls')),
                             )
 
 if "geonode.contrib.metadataxsl" in settings.INSTALLED_APPS:
     urlpatterns += patterns('',
-                            (r'^showmetadata/', include('geonode.contrib.metadataxsl.urls')),
+                            (r'^showmetadata/',
+                             include('geonode.contrib.metadataxsl.urls')),
                             )
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
@@ -157,11 +182,14 @@ urlpatterns += geonode.proxy.urls.urlpatterns
 
 # Serve static files
 urlpatterns += staticfiles_urlpatterns()
-urlpatterns += static(settings.LOCAL_MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.LOCAL_MEDIA_URL,
+                      document_root=settings.MEDIA_ROOT)
 handler403 = 'geonode.views.err403'
 
 # Featured Maps Pattens
 urlpatterns += patterns('',
-                        (r'^featured/(?P<site>[A-Za-z0-9_\-]+)/$', 'geonode.maps.views.featured_map'),
-                        (r'^featured/(?P<site>[A-Za-z0-9_\-]+)/info$', 'geonode.maps.views.featured_map_info'),
+                        (r'^featured/(?P<site>[A-Za-z0-9_\-]+)/$',
+                         'geonode.maps.views.featured_map'),
+                        (r'^featured/(?P<site>[A-Za-z0-9_\-]+)/info$',
+                         'geonode.maps.views.featured_map_info'),
                         )

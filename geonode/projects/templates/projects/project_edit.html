@@ -1,0 +1,29 @@
+{% extends "projects/project_base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+{% load url from future %}
+{% load bootstrap_tags %}
+
+{% block title %} {% trans "Edit Project" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}project edit{% endblock %}
+
+{% block body %}
+
+  <div class="page-header">
+    <h2>{% trans "Edit Project" %}</h2>
+    <a href="{% url 'project_list' %}" class="btn btn-primary pull-right">{% trans "Cancel" %}</a>
+  </div>
+	<div class="form-sections order">
+    <form class="well form-horizontal" method="POST"  enctype="multipart/form-data" id="edit_form">
+      {% csrf_token %}
+      {{ form|as_bootstrap }}
+      <div class="form-group">
+        <label class="col-md-4 control-label"></label>
+        <div class="col-md-4">
+          <button type="submit" class="btn btn-success" > Save Changes </button>
+        </div>
+      </div>  
+    </form>   
+  </div> 
+{% endblock body %}

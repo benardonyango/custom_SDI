@@ -1,0 +1,62 @@
+{% extends "projects/project_base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+{% load url from future %}
+
+{% block title %} {% trans "View Project" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}project view{% endblock %}
+
+{% block body %}
+
+  <div class="page-header">
+    <h2>{% trans "View Project" %}</h2>
+    <a href="{% url 'project_list' %}" class="btn btn-primary pull-right">{% trans "All Projects" %}</a>
+  </div>
+
+  <div class="panel panel-success container-fluid" id="projectPanel">
+
+    <div class="panel-body container-fluid">
+      {% if user.is_authenticated %}
+        <a  class="edit " type="button" aria-label="Edit" href="{% url 'edit_project' pk=project.pk %}"><i class="fa fa-cog fa-x"></i> Edit </a>
+      {% endif %}
+        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 project_image">
+            <img src="{{ project.image.url }}" class="img img-responsive">
+        </div>
+        <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12 details">
+          <div class="proj_header">
+            <h3>{{ project.title }}</h3>
+          </div>
+          <div class="proj_sub">
+            <p class="lead"><span class="col-lg-6">Organization: {{ project.organization }}</span><span class="col-lg-6">Status: {{ project.get_status }}</span></p>
+
+          </div>
+          <div class="proj_desc">
+            <p class="long">{{ project.description|linebreaksbr }} <a href="{% url 'project_list' %}">less <i class="fa fa-angle-double-up"></i></a></p>
+
+          </div>
+        </div>
+    </div>
+    <div class="panel-footer">
+      <div class="row">
+        <div class="footer-block maps col-lg-4 col-md-4 col-sm-4 c0l-xs-4 text-center">
+          <p><i class="fa fa-map"></i> MAPS </p>
+          
+
+        </div>
+        <div class="footer-block layers col-lg-4 col-md-4 col-sm-4 c0l-xs-4 text-center">
+
+          <p><i class="fa fa-clone"></i> LAYERS </p>
+          
+
+        </div>
+        <div class="footer-block documents col-lg-4 col-md-4 col-sm-4 c0l-xs-4 text-center">
+
+          <p><i class="fa fa-file-text"></i> DOCUMENTS </p>
+          
+
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock body %}
