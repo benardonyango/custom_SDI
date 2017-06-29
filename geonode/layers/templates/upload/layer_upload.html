@@ -103,6 +103,11 @@
       </select>
     </section>
 
+    <section class="project">
+      <p>{% trans "Select a project" %}</p>
+      {{ project_form }}
+    </section>
+
     <section>
       <a href="{% url "layer_upload" %}" id="clear-button" class="btn btn-default">{% trans "Clear" %}</a>
       <a href="#" id="upload-button" class="btn btn-danger">{% trans "Upload files" %}</a>

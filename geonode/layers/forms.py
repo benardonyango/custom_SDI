@@ -31,10 +31,20 @@ except ImportError:
     from django.utils import simplejson as json
 from geonode.layers.utils import unzip_file
 from geonode.layers.models import Layer, Attribute
-
-autocomplete_light.autodiscover() # flake8: noqa
+from geonode.projects.models import Project
 
 from geonode.base.forms import ResourceBaseForm
+
+autocomplete_light.autodiscover()  # flake8: noqa
+
+
+class ProjectSelectForm(forms.Form):
+    project = forms.ModelChoiceField(
+        empty_label="Project",
+        label=("Project"),
+        required=False,
+        queryset=Project.objects.all(),
+        widget=autocomplete_light.ChoiceWidget('ProjectAutocomplete'))
 
 
 class JSONField(forms.CharField):
@@ -48,6 +58,7 @@ class JSONField(forms.CharField):
 
 
 class LayerForm(ResourceBaseForm):
+
     class Meta(ResourceBaseForm.Meta):
         model = Layer
         exclude = ResourceBaseForm.Meta.exclude + (
@@ -177,7 +188,8 @@ class LayerUploadForm(forms.Form):
         tempdir = tempfile.mkdtemp()
 
         if zipfile.is_zipfile(self.cleaned_data['base_file']):
-            absolute_base_file = unzip_file(self.cleaned_data['base_file'], '.shp', tempdir=tempdir)
+            absolute_base_file = unzip_file(
+                self.cleaned_data['base_file'], '.shp', tempdir=tempdir)
 
         else:
             for field in self.spatial_files:

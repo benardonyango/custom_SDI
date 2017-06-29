@@ -49,7 +49,8 @@ from django.forms.util import ErrorList
 
 from geonode.tasks.deletion import delete_layer
 from geonode.services.models import Service
-from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
+from geonode.layers.forms import LayerForm, LayerUploadForm,\
+    NewLayerUploadForm, LayerAttributeForm, ProjectSelectForm
 from geonode.base.forms import CategoryForm, TKeywordForm
 from geonode.layers.models import Layer, Attribute, UploadSession
 from geonode.base.enumerations import CHARSETS
@@ -79,11 +80,14 @@ logger = logging.getLogger("geonode.layers.views")
 
 DEFAULT_SEARCH_BATCH_SIZE = 10
 MAX_SEARCH_BATCH_SIZE = 25
-GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your data. \
+GENERIC_UPLOAD_ERROR = _(
+    "There was an error while attempting to upload your data. \
 Please try again, or contact and administrator if the problem continues.")
 
-METADATA_UPLOADED_PRESERVE_ERROR = _("Note: this layer's orginal metadata was \
-populated and preserved by importing a metadata XML file. This metadata cannot be edited.")
+METADATA_UPLOADED_PRESERVE_ERROR = _(
+    "Note: this layer's orginal metadata was \
+populated and preserved by importing a metadata XML file. \
+This metadata cannot be edited.")
 
 _PERMISSION_MSG_DELETE = _("You are not permitted to delete this layer")
 _PERMISSION_MSG_GENERIC = _('You do not have permissions for this layer.')
@@ -109,13 +113,14 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
     """
     Resolve the layer by the provided typename (which may include service name) and check the optional permission.
     """
-    service_typename = typename.split(":", 1)
+    service_typename = typename.split(": ", 1)
 
     if Service.objects.filter(name=service_typename[0]).exists():
         service = Service.objects.filter(name=service_typename[0])
         return resolve_object(request,
                               Layer,
-                              {'typename': service_typename[1] if service[0].method != "C" else typename},
+                              {'typename': service_typename[1] if service[
+                                  0].method != "C" else typename},
                               permission=permission,
                               permission_msg=msg,
                               **kwargs)
@@ -134,11 +139,13 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
 @login_required
 def layer_upload(request, template='upload/layer_upload.html'):
     if request.method == 'GET':
+        project_form = ProjectSelectForm()
         mosaics = Layer.objects.filter(is_mosaic=True).order_by('name')
         ctx = {
             'mosaics': mosaics,
             'charsets': CHARSETS,
             'is_layer': True,
+            'project_form': project_form,
         }
         return render_to_response(template, RequestContext(request, ctx))
     elif request.method == 'POST':
@@ -170,16 +177,20 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     charset=form.cleaned_data["charset"],
                     abstract=form.cleaned_data["abstract"],
                     title=form.cleaned_data["layer_title"],
-                    metadata_uploaded_preserve=form.cleaned_data["metadata_uploaded_preserve"],
-                    metadata_upload_form=form.cleaned_data["metadata_upload_form"]
+                    metadata_uploaded_preserve=form.cleaned_data[
+                        "metadata_uploaded_preserve"],
+                    metadata_upload_form=form.cleaned_data[
+                        "metadata_upload_form"]
                 )
             except Exception as e:
                 exception_type, error, tb = sys.exc_info()
                 logger.exception(e)
                 out['success'] = False
                 out['errors'] = str(error)
-                # Assign the error message to the latest UploadSession from that user.
-                latest_uploads = UploadSession.objects.filter(user=request.user).order_by('-date')
+                # Assign the error message to the latest UploadSession from
+                # that user.
+                latest_uploads = UploadSession.objects.filter(
+                    user=request.user).order_by('-date')
                 if latest_uploads.count() > 0:
                     upload_session = latest_uploads[0]
                     upload_session.error = str(error)
@@ -265,7 +276,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             id=layer.id).update(popular_count=F('popular_count') + 1)
 
     # center/zoom don't matter; the viewer will center on the layer bounds
-    map_obj = GXPMap(projection=getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'))
+    map_obj = GXPMap(projection=getattr(
+        settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'))
 
     NON_WMS_BASE_LAYERS = [
         la for la in default_map_config(request)[1] if la.ows_url is None]
@@ -293,7 +305,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             offset = 10 * (request.page - 1)
             granules = cat.mosaic_granules(coverages['coverages']['coverage'][0]['name'], store, limit=10,
                                            offset=offset, filter=filter)
-            all_granules = cat.mosaic_granules(coverages['coverages']['coverage'][0]['name'], store, filter=filter)
+            all_granules = cat.mosaic_granules(coverages['coverages']['coverage'][
+                                               0]['name'], store, filter=filter)
         except:
             granules = {"features": []}
             all_granules = {"features": []}
@@ -445,7 +458,8 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html', aj
             id=layer.id).update(popular_count=F('popular_count') + 1)
 
     # center/zoom don't matter; the viewer will center on the layer bounds
-    map_obj = GXPMap(projection=getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'))
+    map_obj = GXPMap(projection=getattr(
+        settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'))
 
     NON_WMS_BASE_LAYERS = [
         la for la in default_map_config(request)[1] if la.ows_url is None]
@@ -500,8 +514,11 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html', aj
                         for tk in t.thesaurus.filter(pk__in=tkeywords_ids):
                             tkl = tk.keyword.filter(lang=lang)
                             if len(tkl) > 0:
-                                tkl_ids = ",".join(map(str, tkl.values_list('id', flat=True)))
-                                tkeywords_list += "," + tkl_ids if len(tkeywords_list) > 0 else tkl_ids
+                                tkl_ids = ",".join(
+                                    map(str, tkl.values_list('id', flat=True)))
+                                tkeywords_list += "," + \
+                                    tkl_ids if len(
+                                        tkeywords_list) > 0 else tkl_ids
                     except:
                         tb = traceback.format_exc()
                         logger.error(tb)
@@ -526,8 +543,10 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html', aj
             if poc_form.is_valid():
                 if len(poc_form.cleaned_data['profile']) == 0:
                     # FIXME use form.add_error in django > 1.7
-                    errors = poc_form._errors.setdefault('profile', ErrorList())
-                    errors.append(_('You must set a point of contact for this resource'))
+                    errors = poc_form._errors.setdefault(
+                        'profile', ErrorList())
+                    errors.append(
+                        _('You must set a point of contact for this resource'))
                     poc = None
             if poc_form.has_changed and poc_form.is_valid():
                 new_poc = poc_form.save()
@@ -541,8 +560,10 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html', aj
             if author_form.is_valid():
                 if len(author_form.cleaned_data['profile']) == 0:
                     # FIXME use form.add_error in django > 1.7
-                    errors = author_form._errors.setdefault('profile', ErrorList())
-                    errors.append(_('You must set an author for this resource'))
+                    errors = author_form._errors.setdefault(
+                        'profile', ErrorList())
+                    errors.append(
+                        _('You must set an author for this resource'))
                     metadata_author = None
             if author_form.has_changed and author_form.is_valid():
                 new_author = author_form.save()
@@ -584,12 +605,13 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html', aj
         if new_category is not None:
             Layer.objects.filter(id=the_layer.id).update(
                 category=new_category
-                )
+            )
 
         if getattr(settings, 'SLACK_ENABLED', False):
             try:
                 from geonode.contrib.slack.utils import build_slack_message_layer, send_slack_messages
-                send_slack_messages(build_slack_message_layer("layer_edit", the_layer))
+                send_slack_messages(
+                    build_slack_message_layer("layer_edit", the_layer))
             except:
                 print "Could not send slack message."
 
@@ -598,7 +620,7 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html', aj
                 reverse(
                     'layer_detail',
                     args=(
-                       layer.service_typename,
+                        layer.service_typename,
                     )))
 
         message = layer.typename
@@ -622,7 +644,8 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html', aj
                     for el in settings.THESAURI:
                         thesaurus_name = el['name']
                         try:
-                            t = Thesaurus.objects.get(identifier=thesaurus_name)
+                            t = Thesaurus.objects.get(
+                                identifier=thesaurus_name)
                             for tk in t.thesaurus.all():
                                 tkl = tk.keyword.filter(pk__in=tkeywords_ids)
                                 if len(tkl) > 0:
@@ -745,10 +768,12 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                 tempdir, base_file = form.write_files()
                 if layer.is_vector() and is_raster(base_file):
                     out['success'] = False
-                    out['errors'] = _("You are attempting to replace a vector layer with a raster.")
+                    out['errors'] = _(
+                        "You are attempting to replace a vector layer with a raster.")
                 elif (not layer.is_vector()) and is_vector(base_file):
                     out['success'] = False
-                    out['errors'] = _("You are attempting to replace a raster layer with a vector.")
+                    out['errors'] = _(
+                        "You are attempting to replace a raster layer with a vector.")
                 else:
                     # delete geoserver's store before upload
                     cat = gs_catalog
@@ -806,7 +831,8 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
                 delete_layer.delay(object_id=layer.id)
         except Exception as e:
             traceback.print_exc()
-            message = '{0}: {1}.'.format(_('Unable to delete layer'), layer.typename)
+            message = '{0}: {1}.'.format(
+                _('Unable to delete layer'), layer.typename)
 
             if 'referenced by layer group' in getattr(e, 'message', ''):
                 message = _('This layer is a member of a layer group, you must remove the layer from the group '
@@ -838,10 +864,12 @@ def layer_granule_remove(request, granule_id, layername, template='layers/layer_
             cat._cache.clear()
             store = cat.get_store(layer.name)
             coverages = cat.mosaic_coverages(store)
-            cat.mosaic_delete_granule(coverages['coverages']['coverage'][0]['name'], store, granule_id)
+            cat.mosaic_delete_granule(coverages['coverages']['coverage'][
+                                      0]['name'], store, granule_id)
         except Exception as e:
             traceback.print_exc()
-            message = '{0}: {1}.'.format(_('Unable to delete layer'), layer.typename)
+            message = '{0}: {1}.'.format(
+                _('Unable to delete layer'), layer.typename)
 
             if 'referenced by layer group' in getattr(e, 'message', ''):
                 message = _('This layer is a member of a layer group, you must remove the layer from the group '
@@ -909,7 +937,8 @@ def get_layer(request, layername):
 
 
 def layer_metadata_detail(request, layername, template='layers/layer_metadata_detail.html'):
-    layer = _resolve_layer(request, layername, 'view_resourcebase', _PERMISSION_MSG_METADATA)
+    layer = _resolve_layer(
+        request, layername, 'view_resourcebase', _PERMISSION_MSG_METADATA)
     return render_to_response(template, RequestContext(request, {
         "resource": layer,
         'SITEURL': settings.SITEURL[:-1]
@@ -917,7 +946,8 @@ def layer_metadata_detail(request, layername, template='layers/layer_metadata_de
 
 
 def layer_metadata_upload(request, layername, template='layers/layer_metadata_upload.html'):
-    layer = _resolve_layer(request, layername, 'view_resourcebase', _PERMISSION_MSG_METADATA)
+    layer = _resolve_layer(
+        request, layername, 'view_resourcebase', _PERMISSION_MSG_METADATA)
     return render_to_response(template, RequestContext(request, {
         "resource": layer,
         "layer": layer,
