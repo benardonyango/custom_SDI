@@ -61,10 +61,14 @@
         </div>
 
         <div class="footer-block documents col-lg-4 col-md-4 col-sm-4 c0l-xs-4 text-center">
-
           <p><i class="fa fa-file-text"></i> DOCUMENTS </p>
-          
-
+          {% if project.get_documents %}
+            {% for document in project.get_documents %}
+              <a href="{{ document.get_absolute_url }}"> {{ document.title }} </a>
+            {% endfor %}
+          {% else %}
+            <p> Zero documents </p>
+          {% endif %}
         </div>
       </div>
     </div>
