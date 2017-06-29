@@ -34,9 +34,13 @@ from django.utils.translation import ugettext_lazy as _
 
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase, resourcebase_post_save, Link
-from geonode.documents.enumerations import DOCUMENT_TYPE_MAP, DOCUMENT_MIMETYPE_MAP
+from geonode.documents.enumerations import \
+    DOCUMENT_TYPE_MAP, DOCUMENT_MIMETYPE_MAP
 from geonode.maps.signals import map_changed_signal
 from geonode.maps.models import Map
+
+from geonode.projects.models import Project
+
 from geonode.security.models import remove_object_permissions
 
 IMGTYPES = ['jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif']
@@ -47,8 +51,16 @@ logger = logging.getLogger(__name__)
 class Document(ResourceBase):
 
     """
-    A document is any kind of information that can be attached to a map such as pdf, images, videos, xls...
+    A document is any kind of information that can be attached to a map
+    such as pdf, images, videos, xls...
     """
+
+    # Project association
+    project = models.ForeignKey(
+        Project,
+        default=settings.DEFAULT_PROJECT,
+        on_delete=models.CASCADE,
+    )
 
     doc_file = models.FileField(upload_to='documents',
                                 null=True,
@@ -142,7 +154,8 @@ def pre_save_document(instance, sender, **kwargs):
 
     elif instance.doc_url:
         if '.' in urlparse(instance.doc_url).path:
-            instance.extension = urlparse(instance.doc_url).path.rsplit('.')[-1]
+            instance.extension = urlparse(
+                instance.doc_url).path.rsplit('.')[-1]
 
     if not instance.uuid:
         instance.uuid = str(uuid.uuid1())
