@@ -31,8 +31,10 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.core.files.storage import FileSystemStorage
 
-from geonode.base.models import ResourceBase, ResourceBaseManager, resourcebase_post_save
+from geonode.base.models import ResourceBase, ResourceBaseManager, \
+    resourcebase_post_save
 from geonode.people.utils import get_valid_user
+from geonode.projects.models import Project
 from agon_ratings.models import OverallRating
 from geonode.utils import check_shp_columnnames
 from geonode.security.models import remove_object_permissions
@@ -79,14 +81,19 @@ class Style(models.Model):
 
     def absolute_url(self):
         if self.sld_url:
-            if self.sld_url.startswith(settings.OGC_SERVER['default']['LOCATION']):
-                return self.sld_url.split(settings.OGC_SERVER['default']['LOCATION'], 1)[1]
-            elif self.sld_url.startswith(settings.OGC_SERVER['default']['PUBLIC_LOCATION']):
-                return self.sld_url.split(settings.OGC_SERVER['default']['PUBLIC_LOCATION'], 1)[1]
+            if self.sld_url.startswith(
+                    settings.OGC_SERVER['default']['LOCATION']):
+                return self.sld_url.split(
+                    settings.OGC_SERVER['default']['LOCATION'], 1)[1]
+            elif self.sld_url.startswith(
+                    settings.OGC_SERVER['default']['PUBLIC_LOCATION']):
+                return self.sld_url.split(
+                    settings.OGC_SERVER['default']['PUBLIC_LOCATION'], 1)[1]
 
             return self.sld_url
         else:
-            logger.error("SLD URL is empty for Style %s" % self.name.encode('utf-8'))
+            logger.error("SLD URL is empty for Style %s" %
+                         self.name.encode('utf-8'))
             return None
 
 
@@ -102,6 +109,13 @@ class Layer(ResourceBase):
     Layer (inherits ResourceBase fields)
     """
 
+    # Project association
+    project = models.ForeignKey(
+        Project,
+        default=settings.DEFAULT_PROJECT,
+        on_delete=models.CASCADE,
+    )
+
     # internal fields
     objects = LayerManager()
     workspace = models.CharField(max_length=128)
@@ -113,7 +127,8 @@ class Layer(ResourceBase):
     is_mosaic = models.BooleanField(default=False)
     has_time = models.BooleanField(default=False)
     has_elevation = models.BooleanField(default=False)
-    time_regex = models.CharField(max_length=128, null=True, blank=True, choices=TIME_REGEX)
+    time_regex = models.CharField(
+        max_length=128, null=True, blank=True, choices=TIME_REGEX)
     elevation_regex = models.CharField(max_length=128, null=True, blank=True)
 
     default_style = models.ForeignKey(
@@ -216,15 +231,18 @@ class Layer(ResourceBase):
         if base_files_count == 0:
             return None, None
 
-        msg = 'There should only be one main file (.shp or .geotiff or .asc), found %s' % base_files_count
+        msg = 'There should only be one main file (.shp or .geotiff or .asc), \
+        found %s' % base_files_count
         assert base_files_count == 1, msg
 
         # we need to check, for shapefile, if column names are valid
         list_col = None
         if self.storeType == 'dataStore':
-            valid_shp, wrong_column_name, list_col = check_shp_columnnames(self)
+            valid_shp, wrong_column_name, list_col = check_shp_columnnames(
+                self)
             if wrong_column_name:
-                msg = 'Shapefile has an invalid column name: %s' % wrong_column_name
+                msg = 'Shapefile has an invalid column name: \
+                %s' % wrong_column_name
             else:
                 msg = _('File cannot be opened, maybe check the encoding')
             assert valid_shp, msg
@@ -242,7 +260,8 @@ class Layer(ResourceBase):
         if (visible_attributes.count() > 0):
             cfg["getFeatureInfo"] = {
                 "fields": [l.attribute for l in visible_attributes],
-                "propertyNames": dict([(l.attribute, l.attribute_label) for l in visible_attributes])
+                "propertyNames": dict([(l.attribute, l.attribute_label)
+                                       for l in visible_attributes])
             }
         return cfg
 
@@ -283,7 +302,9 @@ class Layer(ResourceBase):
     @property
     def geogig_link(self):
         if(self.geogig_enabled):
-            return getattr(self.link_set.filter(name__icontains='clone in geogig').first(), 'url', None)
+            return getattr(
+                self.link_set.filter(
+                    name__icontains='clone in geogig').first(), 'url', None)
         return None
 
 
@@ -310,7 +331,9 @@ class LayerFile(models.Model):
     name = models.CharField(max_length=255)
     base = models.BooleanField(default=False)
     file = models.FileField(upload_to='layers',
-                            storage=FileSystemStorage(base_url=settings.LOCAL_MEDIA_URL),  max_length=255)
+                            storage=FileSystemStorage(
+                                base_url=settings.LOCAL_MEDIA_URL),
+                            max_length=255)
 
 
 class AttributeManager(models.Manager):
@@ -340,7 +363,8 @@ class Attribute(models.Model):
         related_name='attribute_set')
     attribute = models.CharField(
         _('attribute name'),
-        help_text=_('name of attribute as stored in shapefile/spatial database'),
+        help_text=_(
+            'name of attribute as stored in shapefile/spatial database'),
         max_length=255,
         blank=False,
         null=True,
@@ -360,7 +384,8 @@ class Attribute(models.Model):
         unique=False)
     attribute_type = models.CharField(
         _('attribute type'),
-        help_text=_('the data type of the attribute (integer, string, geometry, etc)'),
+        help_text=_(
+            'the data type of the attribute (integer, string, geometry, etc)'),
         max_length=50,
         blank=False,
         null=False,
@@ -368,11 +393,15 @@ class Attribute(models.Model):
         unique=False)
     visible = models.BooleanField(
         _('visible?'),
-        help_text=_('specifies if the attribute should be displayed in identify results'),
+        help_text=_(
+            'specifies if the attribute should be displayed in identify \
+            results'),
         default=True)
     display_order = models.IntegerField(
         _('display order'),
-        help_text=_('specifies the order in which attribute should be displayed in identify results'),
+        help_text=_(
+            'specifies the order in which attribute should be displayed \
+            in identify results'),
         default=1)
 
     # statistical derivations
@@ -436,13 +465,14 @@ class Attribute(models.Model):
     last_stats_updated = models.DateTimeField(
         _('last modified'),
         default=datetime.now,
-        help_text=_('date when attribute statistics were last updated'))  # passing the method itself, not
+        # passing the method itself, not
+        help_text=_('date when attribute statistics were last updated'))
 
     objects = AttributeManager()
 
     def __str__(self):
-        return "%s" % self.attribute_label.encode(
-            "utf-8") if self.attribute_label else self.attribute.encode("utf-8")
+        return "%s" % self.attribute_label.encode("utf-8") \
+            if self.attribute_label else self.attribute.encode("utf-8")
 
     def unique_values_as_list(self):
         return self.unique_values.split(',')
@@ -509,11 +539,13 @@ def pre_save_layer(instance, sender, **kwargs):
 
 def pre_delete_layer(instance, sender, **kwargs):
     """
-    Remove any associated style to the layer, if it is not used by other layers.
+    Remove any associated style to the layer,
+    if it is not used by other layers.
     Default style will be deleted in post_delete_layer
     """
     if instance.is_remote:
-        # we need to delete the maplayers here because in the post save layer.service is not available anymore
+        # we need to delete the maplayers here because in the post save
+        # layer.service is not available anymore
         # REFACTOR
         from geonode.maps.models import MapLayer
         if instance.typename:

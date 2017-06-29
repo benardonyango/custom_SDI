@@ -1161,3 +1161,6 @@ RISKS = {'DEFAULT_LOCATION': None,
                            'ARGS': []}}
 
 ADMIN_MODERATE_UPLOADS = False
+
+# Predefine a default Project for resources
+DEFAULT_PROJECT = 1
