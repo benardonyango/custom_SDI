@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% block title %} {% trans "About KSS" %} — {{ block.super }} {% endblock %}
+
+{% block body_outer %}
+<div class="page-header">
+  <h2>{% trans "Kenya Agricultural and Livestock Research Organisation" %}</h2>
+</div>
+<p class="lead">{% trans "The Kenya Soil Survey" %}</p>
+<p>	
+The Kenya Soil Survey (KSS) is a department of <a href="" target="_blank">Food Crops Research Institute</a> (FCRI) at the Kabete Research Centre.
+This department has the national mandate to carry out research on the genesis and distribution of the major soils in the country. 
+Given its situation, KSS also offers soil testing and advisory services on the fertility management of soils to farmers. For a contact in KSS, please follow <a href="" target="_blank">this link</a>.
+</p>
+<p>
+KSS maintains tons of data and documentation (reports) on the biophysical and social environment at varying scales and content details. This immense data will be made available through the <a href="#">KALRO GIS Portal (KGP)</a>.	
+</p>
+<p>
+In 1992, KSS established a GIS lab to maintain, harmonise and manage its large datasets on soils and themes related to the natural resources. This lab is the home of the GIS-Kenya project funded by the <a href="" target="_blank">McKnight Foundation</a>. <br>Dr Peter Macharia presently heads KSS.	
+</p>
+
+{% endblock %}

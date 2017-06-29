@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% block title %} {% trans "About McKnight" %} — {{ block.super }} {% endblock %}
+
+{% block body_outer %}
+<div class="page-header">
+  <h2>{% trans "KALRO-GIS McKnight Project" %}</h2>
+</div>
+<p class="lead">{% trans "A GIS-Kenya Project" %}</p>
+<p>
+The <a href="#">KALRO GIS portal</a> is an initiative of the GIS-Kenya Project funded by the McKnight Foundation through its <a href="" target="_blank">Collaborative Crop Research Programme </a>(CCRP).<br>The project’s long-term aim is a community of researchers that are applying spatial thinking throughout the scientific method for better research.<br>We hope to achieve this change through:
+	<ol>
+		<li> Building capacity of researchers in KALRO,CCRP and universities in applying open source GIS tools and techniques in agricultural research</li>
+		<li> Bridging the gap between theory and practice for university students through targeted but competitive industrial attachments and internships within the KALRO GIS laboratory</li>
+		<li> Enhancing existing capacity of the GIS lab of KALRO, both human and infrastructure</li>
+	</ol>
+</p>
+<p>
+Our collaborating partners are mainly Kenyan public universities, which include, but not limited to:
+	<ol>
+		<li> <a href="" target="_blank">The University of Nairobi</a> - <strong>UoN</strong> </li>
+		<li> <a href="" target="_blank">Dedan Kimathi University of Technology</a> - <strong>DeKUT</strong> </li>
+		<li> <a href="" target="_blank">Jomo Kenyatta University of Agriculture and Technology</a> - <strong>JKUAT</strong> </li>
+		<li> <a href="" target="_blank">Technical University of Kenya</a> - <strong>TUK</strong> </li>
+		<li> <a href="" target="_blank">The University of Eldoret</a> - <strong>UoEld</strong> </li>
+	</ol>
+</p>
+<hr>
+<p>
+TEAM
+	<ol>
+		<!-- list from profiles -->
+		<li> Matolo Nyamai - <em>project leader</em></li>
+		<li> Kennedy Were</li>
+		<li> Lucas Tanui</li>
+		<li> Pamela Okech</li>
+	</ol>
+</p>
+
+
+
+{% endblock %}
