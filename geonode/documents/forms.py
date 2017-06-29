@@ -37,10 +37,20 @@ from geonode.documents.models import (
 )
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
-
-autocomplete_light.autodiscover() # flake8: noqa
+from geonode.projects.models import Project
 
 from geonode.base.forms import ResourceBaseForm
+
+autocomplete_light.autodiscover()  # flake8: noqa
+
+
+class ProjectSelectForm(forms.Form):
+    project = forms.ModelChoiceField(
+        empty_label="Project",
+        label=("Project"),
+        required=False,
+        queryset=Project.objects.all(),
+        widget=autocomplete_light.ChoiceWidget('ProjectAutocomplete'))
 
 
 class DocumentFormMixin(object):
@@ -83,7 +93,7 @@ class DocumentFormMixin(object):
 
         # delete remaining links
         DocumentResourceLink.objects\
-                .exclude(pk__in=[i.pk for i in instances]).delete()
+            .exclude(pk__in=[i.pk for i in instances]).delete()
 
 
 class DocumentForm(ResourceBaseForm, DocumentFormMixin):
@@ -111,6 +121,13 @@ class DocumentForm(ResourceBaseForm, DocumentFormMixin):
 
 
 class DocumentDescriptionForm(forms.Form):
+    project = forms.ModelChoiceField(
+        empty_label="Project",
+        label=("Project"),
+        required=False,
+        queryset=Project.objects.all(),
+        initial=settings.DEFAULT_PROJECT,
+        widget=autocomplete_light.ChoiceWidget('ProjectAutocomplete'))
     title = forms.CharField(300)
     abstract = forms.CharField(1000, widget=forms.Textarea, required=False)
     keywords = forms.CharField(500, required=False)
@@ -172,7 +189,6 @@ class DocumentCreateForm(TranslationModelForm, DocumentFormMixin):
     links = forms.MultipleChoiceField(
         label=_("Link to"),
         required=False)
-
 
     class Meta:
         model = Document
