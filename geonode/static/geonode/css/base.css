@@ -7810,6 +7810,9 @@ footer form {
     margin-top: 30px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
+.panel#projectPanel a:hover{
+    color: #000;
+}
 .panel#projectPanel .panel-body{
     padding: 0;
 }
@@ -7838,7 +7841,6 @@ footer form {
 .panel#projectPanel .panel-body a.edit:active{
 /*.panel#projectPanel .panel-body button.edit .fa{*/
     background-color: #30ad49;
-    color: #000;
 }
 .panel#projectPanel .panel-body div.project_image{
     padding: 20px 20px 0 20px;
@@ -7861,8 +7863,6 @@ footer form {
 }
 .panel#projectPanel .panel-footer a{
     color: #fff;
-    font-size: 26px;
-    /*text-decoration: none;*/
 }
 .panel#projectPanel .panel-footer a:hover,
 .panel#projectPanel .panel-footer a:focus, 
@@ -7873,7 +7873,6 @@ footer form {
 .modal#stepsModal .modal-header,
 .modal#cartModal .modal-header{
     border-bottom: solid 1px #30ad49;
-    /*margin-top: 80px;*/
 }
 .modal#stepsModal .modal-footer,
 .modal#cartModal .modal-footer{

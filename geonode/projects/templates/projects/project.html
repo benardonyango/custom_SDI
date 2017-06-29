@@ -38,7 +38,7 @@
         </div>
     </div>
     <div class="panel-footer">
-      <div class="row"><div class="footer-block maps col-lg-4 col-md-4 col-sm-4 c0l-xs-4 text-center">
+      <div class="row"><div class="footer-block maps col-xs-4 text-center">
           <p><i class="fa fa-map"></i> MAPS </p>
           {% if project.get_maps %}
             {% for map in project.get_maps %}
@@ -49,23 +49,27 @@
           {% endif %}
         </div>
 
-        <div class="footer-block layers col-lg-4 col-md-4 col-sm-4 c0l-xs-4 text-center">
+        <div class="footer-block layers col-xs-4 text-center">
           <p><i class="fa fa-clone"></i> LAYERS </p>
           {% if project.get_layers %}
-            {% for layer in project.get_layers %}
-              <a href="{{ layer.get_absolute_url }}"> {{ layer.title }} </a>
-            {% endfor %}
+              {% for layer in project.get_layers %}
+                <li>
+                  <a href="{{ layer.get_absolute_url }}"> {{ layer.title }} </a>
+                </li>
+              {% endfor %}
           {% else %}
             <p> Zero layers </p>
           {% endif %}
         </div>
 
-        <div class="footer-block documents col-lg-4 col-md-4 col-sm-4 c0l-xs-4 text-center">
+        <div class="footer-block documents col-xs-4 text-center">
           <p><i class="fa fa-file-text"></i> DOCUMENTS </p>
           {% if project.get_documents %}
-            {% for document in project.get_documents %}
-              <a href="{{ document.get_absolute_url }}"> {{ document.title }} </a>
-            {% endfor %}
+              {% for document in project.get_documents %}
+                <li>
+                  <a href="{{ document.get_absolute_url }}"> {{ document.title }} </a>
+                </li>
+              {% endfor %}
           {% else %}
             <p> Zero documents </p>
           {% endif %}
