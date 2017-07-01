@@ -1,13 +1,78 @@
-<div id="composerCart" class="panel panel-default">
-  <div
-    class="panel-heading"
-    ng-bind="'Selected ' + (facetType | default_if_blank : 'objects') | title "></div>
-  <div
-    ng-show="!cart.getCart().items.length"
-    class="panel-body">
-    <p>Add {{ facetType | default_if_blank : 'objects' }} through the "checkboxes".</p>
+
+<div class="panel panel-default" id="composerCart">
+  <div class="panel-heading">Cart</div>
+  <div class="panel-body">
+    <p ng-show="!cart.getCart().items.length">Add resources through the "Add to cart" buttons.</p>
+    <ul class="list-group">
+      <li class="list-group-item" ng-repeat="resource in cart.getCart().items">{{ resource.title | limitTo: 25}}{{ resource.title.length > 25 ? '...' : '' }}<button class="btn btn-default btn-xs pull-right" ng-click="cart.removeItem(resource)"><i class="fa fa-remove fa-lg"></i></button></li>
+    </ul>
   </div>
-  <ul class="list-group">
-    <li class="list-group-item" ng-repeat="resource in cart.getCart().items">{{ resource.title | limitTo: 25}}{{ resource.title.length > 25 ? '...' : '' }}<button class="btn btn-default btn-xs pull-right" ng-click="cart.removeItem(resource)"><i class="fa fa-remove fa-lg"></i></button></li>
-  </ul>
+  <div class="panel-footer text-right">
+    <button class="btn btn-success" type="button" data-toggle="modal" data-target="#cartModal" id="reviewButton">Review</button>
+    <button class="btn btn-success" type="button" data-toggle="modal" data-target="#stepsModal" id="checkoutButton">Purchase</button>
+  </div>
+</div>
+
+   <!-- Cart Modal -->
+
+<div class="modal fade" role="dialog" id="cartModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+          <button class="close" type="button" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Review Cart</h4>
+      </div>
+          <div class="modal-body">
+            <p ng-show="!cart.getCart().items.length">Add resources through the "Add to cart" buttons.</p>
+            <ul class="list-group">
+              <li class="list-group-item" ng-repeat="resource in cart.getCart().items">{{ resource.title | limitTo: 25}}{{ resource.title.length > 25 ? '...' : '' }}<button class="btn btn-default btn-xs pull-right" ng-click="cart.removeItem(resource)"><i class="fa fa-remove fa-lg"></i></button></li>
+            </ul>
+          </div>
+          <div class="modal-footer">
+            <div class="footer-block total col-lg-2 col-md-2 col-sm-2 c0l-xs-2"><h4>TOTAL:</h4></div>
+            <div class="footer-block pricing col-lg-6 col-md-6 col-sm-6 c0l-xs-6">
+              <div class="price col-lg-8 col-md-8 col-sm-8 col-xs-8">2000</div>
+              <div class="currency col-lg-4 col-md-4 col-sm-4 col-xs-4">KSHs</div>
+            </div>
+            <div class="footer-block cta col-lg-4 col-md-4 col-sm-4 c0l-xs-4">
+              <button class="btn btn-success" type="button" data-toggle="modal" data-target="#stepsModal">Purchase</button>
+            </div>
+          </div>
+      </div>
+    </div>
+</div>
+
+   <!-- mpesa steps -->
+<div class="modal fade" role="dialog" id="stepsModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button class="close" type="button" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title"> Pay with Mpesa</h4>
+      </div>
+      <div class="modal-body container-fluid">
+          <p class="col-lg-10 col-lg-offset-1 col-md-10 col-md-offset-1 col-sm-12 col-xs-12">On your phone:</p>
+          <ol class="steps col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 col-sm-12 col-xs-12">
+            <li>Go to <strong>Mpesa</strong> menu</li>
+            <li>Choose <strong>Lipa na Mpesa</strong></li>
+            <li>Select <strong>Buy Goods and Services</strong></li>
+            <li>Enter till number <strong>827788</strong></li>
+            <li>Enter the amount as <span id="amount"><strong>2000</strong></span> Kshs</li>
+            <li>Enter Pin and complete transaction</li>
+          </ol>
+      </div>
+      <div class="modal-footer">
+        <div class="text-center col-lg-10 col-lg-offset-1 col-md-10 col-md-offset-1 col-sm-12 col-xs-12">
+          <h4>Confirm Payment Below</h4>
+          <p>enter transaction number from message i.e <strong>LFU7FE61X3</strong></p>
+        </div>
+        <div class="input-group col-lg-10 col-lg-offset-1 col-md-10 col-md-offset-1 col-sm-12 col-xs-12">
+          <input type="text" class="form-control" aria-label="transaction number" placeholder="Transaction Number">
+          <div class="input-group-btn">
+            <a class="btn btn-default" href="{% url 'confirm' %}">confirm and download data</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
