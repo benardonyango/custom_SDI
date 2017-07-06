@@ -257,6 +257,7 @@ MAX_DOCUMENT_SIZE = int(os.getenv('MAX_DOCUMENT_SIZE ', '2'))  # MB
 GEONODE_APPS = (
     # GeoNode internal apps
     'geonode.people',
+    'geonode.projects',
     'geonode.base',
     'geonode.layers',
     'geonode.maps',
@@ -294,8 +295,7 @@ GEONODE_CONTRIB_APPS = (
     'geonode.contrib.api_basemaps',
 )
 
-# Uncomment the following line to enable contrib apps
-GEONODE_APPS = GEONODE_CONTRIB_APPS + GEONODE_APPS
+GEONODE_APPS = GEONODE_APPS + GEONODE_CONTRIB_APPS
 
 INSTALLED_APPS = (
 
