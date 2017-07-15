@@ -10,91 +10,90 @@ import datetime
 # Create your models here.
 class Project(models.Model):
 
-  ONGOING = 'ON'
-  COMPLETED = 'CP'
+    ONGOING = 'ON'
+    COMPLETED = 'CP'
 
-  STATUS_CHOICES = (
-    (ONGOING, 'Ongoing'),
-    (COMPLETED, 'Completed'),
-  )
+    STATUS_CHOICES = (
+        (ONGOING, 'Ongoing'),
+        (COMPLETED, 'Completed'),
+    )
 
- 
-  title = models.CharField(max_length = 150)
-  description = models.TextField()
-  sname = models.CharField(
-    # A short name field
-    max_length = 30,
-    null = True,
-    blank = True,
-    help_text = "Short name for project, example KCEP or CCRP"
-  )
-  organization = models.CharField(max_length = 150)
-  # admin = models.ForeignField()
-  start_date = models.DateField(
-    default = timezone.now, #datetime.date.today(),
-    help_text = "Please define the date that the project was initiated"
-  )
+    title = models.CharField(max_length=150)
+    description = models.TextField()
+    sname = models.CharField(
+        # A short name field
+        max_length=30,
+        null=True,
+        blank=True,
+        help_text="Short name for project, example KCEP or CCRP"
+    )
+    organization = models.CharField(max_length=150)
+    # admin = models.ForeignField()
+    start_date = models.DateField(
+        default=timezone.now,  # datetime.date.today(),
+        help_text="Please define the date that the project was initiated"
+    )
 
-  end_date = models.DateField(
-    blank = True,
-    null = True,
-    help_text = "Leave blank if project is still continuing"
-  )
+    end_date = models.DateField(
+        blank=True,
+        null=True,
+        help_text="Leave blank if project is still continuing"
+    )
 
-  published_date = models.DateTimeField(
-    auto_now_add = True
-  )
+    published_date = models.DateTimeField(
+        auto_now_add=True
+    )
 
-  last_modified = models.DateTimeField(
-    auto_now = True
-  )
+    last_modified = models.DateTimeField(
+        auto_now=True
+    )
 
-  status = models.CharField(
-    max_length = 2,
-    choices = STATUS_CHOICES,
-    default = 'ON'
-  ) #choices for project status 
+    status = models.CharField(
+        max_length=2,
+        choices=STATUS_CHOICES,
+        default='ON'
+    )  # choices for project status
 
-  image = models.ImageField(upload_to='images/')
+    image = models.ImageField(upload_to='images/')
 
-  def __str__(self):
-    return self.title
+    def __str__(self):
+        return self.title
 
-  def get_layers(self):
-    layers = self.layer_set.all()
-    return layers
+    def get_layers(self):
+        layers = self.layer_set.all()
+        return layers
 
-  def get_documents(self):
-    documents = self.document_set.all()
-    return documents
+    def get_documents(self):
+        documents = self.document_set.all()
+        return documents
 
-  def get_maps(self):
-    maps = []
-    layers = self.get_layers()
+    def get_maps(self):
+        maps = []
+        layers = self.get_layers()
 
-    for layer in layers:
-      related_maps = layer.maps()
-      maps+=related_maps
+        for layer in layers:
+            related_maps = layer.maps()
+            maps += related_maps
 
-    # return a filtered out unique set of maps
-    return list(set(maps))
+        # return a filtered out unique set of maps
+        return list(set(maps))
 
-  def get_url(id):
-    """ get url to project. difference to get_absolute_url?? """
-    id = id
-    return reverse('project_detail', kwargs={'pk': id})
+    def get_url(id):
+        """ get url to project. difference to get_absolute_url?? """
+        id = id
+        return reverse('project_detail', kwargs={'pk': id})
 
-  def get_absolute_url(self):
-    # return reverse('project_list')
-    return reverse('project_detail', kwargs={'pk': self.pk})
+    def get_absolute_url(self):
+        # return reverse('project_list')
+        return reverse('project_detail', kwargs={'pk': self.pk})
 
-  def get_status(self):
-    if self.status == 'ON':
-      return 'Ongoing'
-    return 'Completed'
+    def get_status(self):
+        if self.status == 'ON':
+            return 'Ongoing'
+        return 'Completed'
 
-  def publish(self):
-    self.save()
+    def publish(self):
+        self.save()
 
-  def destroy(self):
-    self.delete()
+    def destroy(self):
+        self.delete()

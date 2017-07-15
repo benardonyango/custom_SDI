@@ -5,14 +5,10 @@ from django.utils import timezone
 from models import Project
 from forms import ProjectForm
 
-# queries
-order = Project.objects.all()
-# .order_by('published_date')
-
 
 def list_projects(request):
 
-    projects = order
+    projects = Project.objects.all()
 
     if len(projects) == 0:
         code = 'NULL'
@@ -31,8 +27,8 @@ def list_projects(request):
         {"json": project_json})
 
 
-def list_complete_projects(request):
-    projects = order.filter(status='CP')
+def list_completed_projects(request):
+    projects = Project.objects.filter(status='CP')
     if len(projects) == 0:
         code = 'NULL_COMPLETE'
         return render(
@@ -47,7 +43,7 @@ def list_complete_projects(request):
 
 
 def list_ongoing_projects(request):
-    projects = order.filter(status='ON')
+    projects = Project.objects.filter(status='ON')
     if len(projects) == 0:
         code = 'NULL_ONGOING'
         return render(
