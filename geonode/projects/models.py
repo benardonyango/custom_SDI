@@ -9,17 +9,7 @@ import datetime
 
 # Create your models here.
 class Project(models.Model):
-
-    ONGOING = 'ON'
-    COMPLETED = 'CP'
-
-    STATUS_CHOICES = (
-        (ONGOING, 'Ongoing'),
-        (COMPLETED, 'Completed'),
-    )
-
     title = models.CharField(max_length=150)
-    description = models.TextField()
     sname = models.CharField(
         # A short name field
         max_length=30,
@@ -27,8 +17,8 @@ class Project(models.Model):
         blank=True,
         help_text="Short name for project, example KCEP or CCRP"
     )
+    description = models.TextField()
     organization = models.CharField(max_length=150)
-    # admin = models.ForeignField()
     start_date = models.DateField(
         default=timezone.now,  # datetime.date.today(),
         help_text="Please define the date that the project was initiated"
@@ -39,6 +29,18 @@ class Project(models.Model):
         null=True,
         help_text="Leave blank if project is still continuing"
     )
+    image = models.ImageField(upload_to='images/')
+
+    STATUS_CHOICES = (
+        ('ON', 'Ongoing'),
+        ('CP', 'Completed'),
+    )
+
+    status = models.CharField(
+        max_length=2,
+        choices=STATUS_CHOICES,
+        default='ON'
+    )
 
     published_date = models.DateTimeField(
         auto_now_add=True
@@ -47,14 +49,6 @@ class Project(models.Model):
     last_modified = models.DateTimeField(
         auto_now=True
     )
-
-    status = models.CharField(
-        max_length=2,
-        choices=STATUS_CHOICES,
-        default='ON'
-    )  # choices for project status
-
-    image = models.ImageField(upload_to='images/')
 
     def __str__(self):
         return self.title
@@ -93,6 +87,8 @@ class Project(models.Model):
         return 'Completed'
 
     def publish(self):
+        if self.start_date > self.end_date:
+            pass
         self.save()
 
     def destroy(self):

@@ -3,10 +3,91 @@ from django.core.urlresolvers import resolve
 from django.http import HttpRequest
 from django.test import TestCase
 
+from datetime import datetime
+
 from . import views
 from .models import Project
 
 # Create your tests here.
+
+
+class ProjectModelTest(TestCase):
+
+    def create_default_project(self):
+        my_project = Project.objects.create(
+            title='My test project',
+            description='Blank n blind test description',
+            sname='BBTD',
+            organization='JDEV',
+            start_date='2000-01-01',
+            end_date='2017-07-14',
+            image='/home/jdev/Pictures/IAMROOT.jpg',  # use dynamic asset
+            status='ON',
+        )
+
+    def to_date(self, date):
+        return datetime.strptime(date, '%Y-%m-%d').date()
+
+    def test_saving_and_retrieving_projects(self):
+        self.create_default_project()
+        self.assertEqual(Project.objects.count(), 1)
+
+        project = Project.objects.first()
+        self.assertEqual(project.status, 'ON')
+        self.assertEqual(project.title, 'My test project')
+
+    def test_updating_projects(self):
+        self.create_default_project()
+        self.assertEqual(Project.objects.count(), 1)
+
+        # retrieve, edit and update project
+        p = Project.objects.first()
+        p.title = 'Edited Project Title'
+        p.description = 'Edited description'
+        p.sname = 'ED'
+        p.organization = 'ECORP'
+        p.start_date = self.to_date('2000-12-11')
+        p.end_date = self.to_date('2017-07-15')
+        p.image = '/home/jdev/Downloads/farechart.jpg'
+        p.status = 'CP'
+        p.save()
+
+        project = Project.objects.first()
+        self.assertEqual(project.title, 'Edited Project Title')
+        self.assertNotEqual(project.title, 'My test project')
+
+        self.assertEqual(project.description, 'Edited description')
+        self.assertNotEqual(project.description,
+                            'Blank n blind test description')
+
+        self.assertEqual(project.sname, 'ED')
+        self.assertNotEqual(project.sname, 'BBTD')
+
+        self.assertEqual(project.organization, 'ECORP')
+        self.assertNotEqual(project.organization, 'JDEV')
+
+        self.assertEqual(project.start_date, self.to_date('2000-12-11',))
+        self.assertNotEqual(project.start_date, self.to_date('2000-01-01',))
+
+        self.assertEqual(project.end_date, self.to_date('2017-07-15',))
+        self.assertNotEqual(project.end_date, self.to_date('2017-07-14',))
+
+        self.assertEqual(project.image, '/home/jdev/Downloads/farechart.jpg')
+        self.assertNotEqual(project.image,
+                            '/home/jdev/Pictures/IAMROOT.jpg')
+
+        self.assertEqual(project.status, 'CP')
+        self.assertNotEqual(project.status, 'ON')
+
+    def test_can_delete_project(self):
+        self.create_default_project()
+
+        self.assertEqual(Project.objects.count(), 1)
+
+        project = Project.objects.first()
+        project.delete()
+
+        self.assertEqual(Project.objects.count(), 0)
 
 
 class AllProjectsPageTest(TestCase):
@@ -103,15 +184,3 @@ class CompletedProjectsPageTest(TestCase):
 
         self.assertContains(response, completed_project.title)
         self.assertNotContains(response, ongoing_project.title)
-
-
-# class ProjectModelTest(TestCase):
-
-#     def test_can_create_and_save_project(self):
-#         pass
-
-#     def test_can_update_project(self):
-#         pass
-
-#     def test_can_delete_project(self):
-#         pass
