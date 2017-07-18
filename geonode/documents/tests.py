@@ -99,11 +99,29 @@ class DocumentsTest(TestCase):
         c = Document.objects.create(
             doc_file=f,
             owner=superuser,
-            title='theimg')
+            title='theimg',
+            free=True,
+            price=0)
         c.set_default_permissions()
 
-        self.assertEquals(Document.objects.get(pk=c.id).title, 'theimg')
-        self.assertEquals(Document.objects.get(pk=c.id).project.id, 1)
+        document = Document.objects.get(pk=c.id)
+
+        self.assertEquals(document.title, 'theimg')
+        self.assertEquals(document.project.id, 1)
+
+        # Test free resource
+        self.assertTrue(document.free)
+        self.assertEquals(document.price, 0)
+
+        # Edit and Test paid resource
+        resource = document
+        resource.free = False
+        resource.price = 200
+        resource.save()
+
+        document = Document.objects.get(pk=resource.id)
+        self.assertFalse(document.free)
+        self.assertEquals(document.price, 200)
 
     def test_create_document_with_rel(self):
         """Tests the creation of a document with no a map related"""
@@ -120,7 +138,10 @@ class DocumentsTest(TestCase):
         c = Document.objects.create(
             doc_file=f,
             owner=superuser,
-            title='theimg')
+            title='theimg',
+            free=False,
+            price=200
+        )
 
         m = Map.objects.all()[0]
         ctype = ContentType.objects.get_for_model(m)
@@ -129,10 +150,25 @@ class DocumentsTest(TestCase):
             content_type=ctype,
             object_id=m.id)
 
-        self.assertEquals(Document.objects.get(pk=c.id).title, 'theimg')
+        document = Document.objects.get(pk=c.id)
+        self.assertEquals(document.title, 'theimg')
         self.assertEquals(DocumentResourceLink.objects.get(pk=l.id).object_id,
                           m.id)
-        self.assertEquals(Document.objects.get(pk=c.id).project.id, 1)
+        self.assertEquals(document.project.id, 1)
+
+        # Test paid resource
+        self.assertFalse(document.free)
+        self.assertEquals(document.price, 200)
+
+        # Edit and Test free resource
+        resource = document
+        resource.free = True
+        resource.price = 0
+        resource.save()
+
+        document = Document.objects.get(pk=resource.id)
+        self.assertTrue(document.free)
+        self.assertEquals(document.price, 0)
 
     def test_create_document_url(self):
         """Tests creating an external document instead of a file."""

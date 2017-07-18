@@ -61,6 +61,9 @@ class Document(ResourceBase):
         default=settings.DEFAULT_PROJECT,
         on_delete=models.CASCADE,
     )
+    # Commercialization
+    free = models.BooleanField(null=False, default=True)
+    price = models.PositiveIntegerField(default=0)
 
     doc_file = models.FileField(upload_to='documents',
                                 null=True,
