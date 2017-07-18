@@ -41,6 +41,8 @@ from guardian.shortcuts import get_anonymous_user
 
 from .forms import DocumentCreateForm
 
+from geonode.projects.models import Project
+
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.documents.models import Document, DocumentResourceLink
@@ -69,8 +71,24 @@ class DocumentsTest(TestCase):
             '\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
         self.anonymous_user = get_anonymous_user()
 
+    def createProject(self):
+        """ Creates a default project """
+
+        my_project = Project.objects.create(
+            title='My test project',
+            description='Blank n blind test description',
+            sname='BBTD',
+            organization='JDEV',
+            start_date='2000-01-01',
+            end_date='2017-07-14',
+            image='/home/jdev/Pictures/IAMROOT.jpg',  # use dynamic asset
+            status='ON',
+        )
+
     def test_create_document_with_no_rel(self):
         """Tests the creation of a document with no relations"""
+
+        self.createProject()
 
         f = SimpleUploadedFile(
             'test_img_file.gif',
@@ -83,10 +101,15 @@ class DocumentsTest(TestCase):
             owner=superuser,
             title='theimg')
         c.set_default_permissions()
+
         self.assertEquals(Document.objects.get(pk=c.id).title, 'theimg')
+        self.assertEquals(Document.objects.get(pk=c.id).project.id, 1)
 
     def test_create_document_with_rel(self):
         """Tests the creation of a document with no a map related"""
+
+        self.createProject()
+
         f = SimpleUploadedFile(
             'test_img_file.gif',
             self.imgfile.read(),
@@ -109,6 +132,7 @@ class DocumentsTest(TestCase):
         self.assertEquals(Document.objects.get(pk=c.id).title, 'theimg')
         self.assertEquals(DocumentResourceLink.objects.get(pk=l.id).object_id,
                           m.id)
+        self.assertEquals(Document.objects.get(pk=c.id).project.id, 1)
 
     def test_create_document_url(self):
         """Tests creating an external document instead of a file."""
@@ -211,7 +235,8 @@ class DocumentsTest(TestCase):
         d = Document.objects.get(pk=1)
         d.set_default_permissions()
 
-        response = self.client.get(reverse('document_detail', args=(str(d.id),)))
+        response = self.client.get(
+            reverse('document_detail', args=(str(d.id),)))
         self.assertEquals(response.status_code, 200)
 
     def test_access_document_upload_form(self):
@@ -299,7 +324,8 @@ class DocumentsTest(TestCase):
         self.assertEquals(response.status_code, 404)
 
         # Test that GET returns permissions
-        response = self.client.get(reverse('resource_permissions', args=(document_id,)))
+        response = self.client.get(
+            reverse('resource_permissions', args=(document_id,)))
         assert('permissions' in response.content)
 
         # Test that a user is required to have
@@ -488,11 +514,14 @@ class DocumentNotificationsTestCase(NotificationsTestsHelper):
     def testDocumentNotifications(self):
         with self.settings(NOTIFICATION_QUEUE_ALL=True):
             self.clear_notifications_queue()
-            l = Document.objects.create(title='test notifications', owner=self.u)
-            self.assertTrue(self.check_notification_out('document_created', self.u))
+            l = Document.objects.create(
+                title='test notifications', owner=self.u)
+            self.assertTrue(self.check_notification_out(
+                'document_created', self.u))
             l.title = 'test notifications 2'
             l.save()
-            self.assertTrue(self.check_notification_out('document_updated', self.u))
+            self.assertTrue(self.check_notification_out(
+                'document_updated', self.u))
 
             from dialogos.models import Comment
             lct = ContentType.objects.get_for_model(l)
@@ -501,7 +530,8 @@ class DocumentNotificationsTestCase(NotificationsTestsHelper):
                               content_object=l, comment='test comment')
             comment.save()
 
-            self.assertTrue(self.check_notification_out('document_comment', self.u))
+            self.assertTrue(self.check_notification_out(
+                'document_comment', self.u))
 
 
 class DocumentResourceLinkTestCase(TestCase):
