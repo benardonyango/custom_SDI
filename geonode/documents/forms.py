@@ -192,7 +192,7 @@ class DocumentCreateForm(TranslationModelForm, DocumentFormMixin):
 
     class Meta:
         model = Document
-        fields = ['title', 'doc_file', 'doc_url']
+        fields = ['project', 'title', 'doc_file', 'doc_url', 'free', 'price']
         widgets = {
             'name': HiddenInput(attrs={'cols': 80, 'rows': 20}),
         }
