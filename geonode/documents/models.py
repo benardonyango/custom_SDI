@@ -60,10 +60,18 @@ class Document(ResourceBase):
         Project,
         default=settings.DEFAULT_PROJECT,
         on_delete=models.CASCADE,
+        help_text=_('Associated project'),
     )
     # Commercialization
-    free = models.BooleanField(null=False, default=True)
-    price = models.PositiveIntegerField(default=0)
+    free = models.BooleanField(
+        null=False,
+        default=True,
+        help_text=_('Uncheck for a commercialised document')
+    )
+    price = models.PositiveIntegerField(
+        default=0,
+        null=False,
+        help_text=_('Declare price of document'))
 
     doc_file = models.FileField(upload_to='documents',
                                 null=True,
