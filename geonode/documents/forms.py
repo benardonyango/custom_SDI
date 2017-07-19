@@ -44,15 +44,6 @@ from geonode.base.forms import ResourceBaseForm
 autocomplete_light.autodiscover()  # flake8: noqa
 
 
-class ProjectSelectForm(forms.Form):
-    project = forms.ModelChoiceField(
-        empty_label="Project",
-        label=("Project"),
-        required=False,
-        queryset=Project.objects.all(),
-        widget=autocomplete_light.ChoiceWidget('ProjectAutocomplete'))
-
-
 class DocumentFormMixin(object):
 
     def generate_link_choices(self, resources=None):
@@ -121,13 +112,6 @@ class DocumentForm(ResourceBaseForm, DocumentFormMixin):
 
 
 class DocumentDescriptionForm(forms.Form):
-    project = forms.ModelChoiceField(
-        empty_label="Project",
-        label=("Project"),
-        required=False,
-        queryset=Project.objects.all(),
-        initial=settings.DEFAULT_PROJECT,
-        widget=autocomplete_light.ChoiceWidget('ProjectAutocomplete'))
     title = forms.CharField(300)
     abstract = forms.CharField(1000, widget=forms.Textarea, required=False)
     keywords = forms.CharField(500, required=False)

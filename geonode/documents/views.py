@@ -41,7 +41,7 @@ from geonode.base.forms import CategoryForm
 from geonode.base.models import TopicCategory
 from geonode.documents.models import Document, get_related_resources
 from geonode.documents.forms import DocumentForm, DocumentCreateForm, \
-    DocumentReplaceForm, ProjectSelectForm
+    DocumentReplaceForm
 from geonode.documents.models import IMGTYPES
 from geonode.utils import build_social_links
 from geonode.groups.models import GroupProfile
