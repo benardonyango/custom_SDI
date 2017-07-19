@@ -84,6 +84,7 @@ class DocumentsTest(TestCase):
             image='/home/jdev/Pictures/IAMROOT.jpg',  # use dynamic asset
             status='ON',
         )
+        return my_project
 
     def test_create_document_with_no_rel(self):
         """Tests the creation of a document with no relations"""
@@ -218,6 +219,9 @@ class DocumentsTest(TestCase):
         form = DocumentCreateForm(data=form_data)
         self.assertFalse(form.is_valid())
 
+        # project association is required
+        self.assertTrue('project' in form.errors)
+
         # title is required
         self.assertTrue('title' in form.errors)
 
@@ -228,10 +232,16 @@ class DocumentsTest(TestCase):
         # in form.errors.
         self.assertTrue('__all__' in form.errors)
 
+        project = self.createProject()
+
         form_data = {
+            'project': project.id,
             'title': 'GeoNode Map',
             'permissions': '{"anonymous":"document_readonly","authenticated":"resourcebase_readwrite","users":[]}',
-            'doc_url': 'http://www.geonode.org/map.pdf'}
+            'doc_url': 'http://www.geonode.org/map.pdf',
+            'free': True,
+            'price': 0,
+        }
 
         form = DocumentCreateForm(data=form_data)
         self.assertTrue(form.is_valid())
@@ -246,8 +256,11 @@ class DocumentsTest(TestCase):
                 data=form_data).errors)
 
         form_data = {
+            'project': project.id,
             'title': 'GeoNode Map',
             'permissions': '{"anonymous":"document_readonly","authenticated":"resourcebase_readwrite","users":[]}',
+            'price': 0,
+            'free': True,
         }
 
         file_data = {
