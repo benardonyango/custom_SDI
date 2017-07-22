@@ -116,6 +116,18 @@ class Layer(ResourceBase):
         on_delete=models.CASCADE,
     )
 
+    # Commercialization
+    free = models.BooleanField(
+        null=False,
+        default=True,
+        help_text=_('Keep checked for a free layer'),
+    )
+    price = models.PositiveIntegerField(
+        default=0,
+        null=False,
+        help_text=_('Declare price of layer'),
+    )
+
     # internal fields
     objects = LayerManager()
     workspace = models.CharField(max_length=128)
