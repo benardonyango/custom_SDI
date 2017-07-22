@@ -135,6 +135,20 @@ class LayersTest(TestCase):
         lyr.project = second_project
         self.assertEqual(lyr.project.title, second_project.title)
 
+    def test_layer_commercialization(self):
+        lyr = Layer.objects.first()
+        self.assertTrue(lyr.free)
+        self.assertEqual(lyr.price, 0)
+
+        lyr.free = False
+        lyr.price = 200
+        lyr.save()
+
+        # modify and test for paid layer
+        modified_layer = Layer.objects.get(pk=1)
+        self.assertFalse(modified_layer.free)
+        self.assertEquals(modified_layer.price, 200)
+
     def test_describe_data(self):
         '''/data/geonode:CA/metadata -> Test accessing the description of a layer '''
         self.assertEqual(8, get_user_model().objects.all().count())
