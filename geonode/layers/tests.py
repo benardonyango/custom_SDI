@@ -54,6 +54,8 @@ from .populate_layers_data import create_layer_data
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.layers import LayersAppConfig
 
+from geonode.projects.models import Project
+
 
 class LayersTest(TestCase):
 
@@ -68,6 +70,21 @@ class LayersTest(TestCase):
         create_models(type='layer')
         create_layer_data()
         self.anonymous_user = get_anonymous_user()
+
+    def createProject(self):
+        """ Creates a default project """
+
+        my_project = Project.objects.create(
+            title='My test project',
+            description='Blank n blind test description',
+            sname='BBTD',
+            organization='JDEV',
+            start_date='2000-01-01',
+            end_date='2017-07-14',
+            image='/home/jdev/Pictures/IAMROOT.jpg',  # use dynamic asset
+            status='ON',
+        )
+        return my_project
 
     # Data Tests
 
@@ -106,6 +123,17 @@ class LayersTest(TestCase):
         # Test that upload form has project select widget
         # project_select = self.client.get_element_by
         # Test commercialisation in upload form
+
+    def test_layer_project_relation(self):
+        first_project = self.createProject()
+        second_project = self.createProject()
+
+        lyr = Layer.objects.first()
+        self.assertEqual(lyr.project.id, 1)
+
+        # modify and test project relation
+        lyr.project = second_project
+        self.assertEqual(lyr.project.title, second_project.title)
 
     def test_describe_data(self):
         '''/data/geonode:CA/metadata -> Test accessing the description of a layer '''
