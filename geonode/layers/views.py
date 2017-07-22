@@ -57,6 +57,8 @@ from geonode.base.enumerations import CHARSETS
 from geonode.base.models import TopicCategory
 from geonode.groups.models import GroupProfile
 
+from geonode.projects.models import Project
+
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
@@ -140,12 +142,13 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
 def layer_upload(request, template='upload/layer_upload.html'):
     if request.method == 'GET':
         project_form = ProjectSelectForm()
+        projects = Project.objects.all()
         mosaics = Layer.objects.filter(is_mosaic=True).order_by('name')
         ctx = {
             'mosaics': mosaics,
             'charsets': CHARSETS,
             'is_layer': True,
-            'project_form': project_form,
+            'projects': projects,
         }
         return render_to_response(template, RequestContext(request, ctx))
     elif request.method == 'POST':
@@ -163,6 +166,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
             else:
                 name_base, __ = os.path.splitext(
                     form.cleaned_data["base_file"].name)
+
             name = slugify(name_base.replace(".", "_"))
             try:
                 # Moved this inside the try/except block because it can raise

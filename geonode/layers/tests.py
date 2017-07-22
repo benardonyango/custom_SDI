@@ -79,13 +79,15 @@ class LayersTest(TestCase):
     def test_describe_data_2(self):
         '''/data/geonode:CA/metadata -> Test accessing the description of a layer '''
         self.assertEqual(8, get_user_model().objects.all().count())
-        response = self.client.get(reverse('layer_metadata', args=('geonode:CA',)))
+        response = self.client.get(
+            reverse('layer_metadata', args=('geonode:CA',)))
         # Since we are not authenticated, we should not be able to access it
         self.failUnlessEqual(response.status_code, 302)
         # but if we log in ...
         self.client.login(username='admin', password='admin')
         # ... all should be good
-        response = self.client.get(reverse('layer_metadata', args=('geonode:CA',)))
+        response = self.client.get(
+            reverse('layer_metadata', args=('geonode:CA',)))
         self.failUnlessEqual(response.status_code, 200)
 
     # Layer Tests
@@ -101,16 +103,22 @@ class LayersTest(TestCase):
         response = self.client.get(reverse('layer_upload'))
         self.assertEquals(response.status_code, 200)
 
+        # Test that upload form has project select widget
+        # project_select = self.client.get_element_by
+        # Test commercialisation in upload form
+
     def test_describe_data(self):
         '''/data/geonode:CA/metadata -> Test accessing the description of a layer '''
         self.assertEqual(8, get_user_model().objects.all().count())
-        response = self.client.get(reverse('layer_metadata', args=('geonode:CA',)))
+        response = self.client.get(
+            reverse('layer_metadakta', args=('geonode:CA',)))
         # Since we are not authenticated, we should not be able to access it
         self.failUnlessEqual(response.status_code, 302)
         # but if we log in ...
         self.client.login(username='admin', password='admin')
         # ... all should be good
-        response = self.client.get(reverse('layer_metadata', args=('geonode:CA',)))
+        response = self.client.get(
+            reverse('layer_metadata', args=('geonode:CA',)))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_layer_attributes(self):
@@ -313,7 +321,8 @@ class LayersTest(TestCase):
         the_zip.writestr('foo.shx', in_memory_file.getvalue())
         the_zip.writestr('foo.prj', in_memory_file.getvalue())
         the_zip.close()
-        files = dict(base_file=SimpleUploadedFile('test_upload.zip', open('test_upload.zip').read()))
+        files = dict(base_file=SimpleUploadedFile(
+            'test_upload.zip', open('test_upload.zip').read()))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
         os.remove('test_upload.zip')
 
@@ -338,7 +347,8 @@ class LayersTest(TestCase):
         the_zip.writestr('foo.shx', in_memory_file.getvalue())
         the_zip.writestr('foo.prj', in_memory_file.getvalue())
         the_zip.close()
-        files = dict(base_file=SimpleUploadedFile('test_upload.zip', open('test_upload.zip').read()))
+        files = dict(base_file=SimpleUploadedFile(
+            'test_upload.zip', open('test_upload.zip').read()))
         form = LayerUploadForm(dict(), files)
         self.assertTrue(form.is_valid())
         tempdir = form.write_files()[0]
@@ -760,7 +770,8 @@ class LayersTest(TestCase):
         """
         layer = Layer.objects.first()
         user = get_anonymous_user()
-        layer.set_permissions({'users': {user.username: ['change_layer_data']}})
+        layer.set_permissions(
+            {'users': {user.username: ['change_layer_data']}})
         perms = layer.get_all_level_info()
         self.assertIn('change_layer_data', perms['users'][user])
 
@@ -862,28 +873,35 @@ class UnpublishedObjectTests(TestCase):
         # default (RESOURCE_PUBLISHING=False)
         # access to layer detail page gives 200 if layer is published or
         # unpublished
-        response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
+        response = self.client.get(
+            reverse('layer_detail', args=('geonode:CA',)))
         self.failUnlessEqual(response.status_code, 200)
         layer = Layer.objects.filter(title='CA')[0]
         layer.is_published = False
         layer.save()
-        response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
+        response = self.client.get(
+            reverse('layer_detail', args=('geonode:CA',)))
         self.failUnlessEqual(response.status_code, 200)
 
         # with resource publishing
         with self.settings(RESOURCE_PUBLISHING=True):
             # 404 if layer is unpublished
-            response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
+            response = self.client.get(
+                reverse('layer_detail', args=('geonode:CA',)))
             self.failUnlessEqual(response.status_code, 404)
             # 200 if layer is unpublished but user has permission
-            assign_perm('publish_resourcebase', user, layer.get_self_resource())
-            response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
+            assign_perm('publish_resourcebase', user,
+                        layer.get_self_resource())
+            response = self.client.get(
+                reverse('layer_detail', args=('geonode:CA',)))
             self.failUnlessEqual(response.status_code, 200)
             # 200 if layer is published
             layer.is_published = True
             layer.save()
-            remove_perm('publish_resourcebase', user, layer.get_self_resource())
-            response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
+            remove_perm('publish_resourcebase', user,
+                        layer.get_self_resource())
+            response = self.client.get(
+                reverse('layer_detail', args=('geonode:CA',)))
             self.failUnlessEqual(response.status_code, 200)
 
         layer.is_published = True
@@ -910,7 +928,8 @@ class LayerModerationTestCase(TestCase):
         base_name = 'single_point'
         suffixes = 'shp shx dbf prj'.split(' ')
         base_path = gisdata.GOOD_DATA
-        paths = [os.path.join(base_path, 'vector', '{}.{}'.format(base_name, suffix)) for suffix in suffixes]
+        paths = [os.path.join(base_path, 'vector', '{}.{}'.format(
+            base_name, suffix)) for suffix in suffixes]
         return paths, suffixes,
 
     def test_moderated_upload(self):
@@ -929,7 +948,8 @@ class LayerModerationTestCase(TestCase):
             input_files = [open(fp, 'rb') for fp in input_paths]
 
             # ..but also specific mapping for upload
-            files = dict(zip(['{}_file'.format(s) for s in suffixes], input_files))
+            files = dict(zip(['{}_file'.format(s)
+                              for s in suffixes], input_files))
 
             # don't forget about renaming main file
             files['base_file'] = files.pop('shp_file')
@@ -957,7 +977,8 @@ class LayerModerationTestCase(TestCase):
             input_files = [open(fp, 'rb') for fp in input_paths]
 
             # ..but also specific mapping for upload
-            files = dict(zip(['{}_file'.format(s) for s in suffixes], input_files))
+            files = dict(zip(['{}_file'.format(s)
+                              for s in suffixes], input_files))
 
             # don't forget about renaming main file
             files['base_file'] = files.pop('shp_file')
@@ -998,7 +1019,8 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
             l = Layer.objects.create(name='test notifications')
             l.name = 'test notifications 2'
             l.save()
-            self.assertTrue(self.check_notification_out('layer_updated', self.u))
+            self.assertTrue(self.check_notification_out(
+                'layer_updated', self.u))
 
             from dialogos.models import Comment
             lct = ContentType.objects.get_for_model(l)
@@ -1007,4 +1029,5 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
                               content_object=l, comment='test comment')
             comment.save()
 
-            self.assertTrue(self.check_notification_out('layer_comment', self.u))
+            self.assertTrue(self.check_notification_out(
+                'layer_comment', self.u))

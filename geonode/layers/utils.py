@@ -84,7 +84,8 @@ def resolve_regions(regions):
         if len(regions) > 0:
             for region in regions:
                 try:
-                    region_resolved = Region.objects.get(Q(name__iexact=region) | Q(code__iexact=region))
+                    region_resolved = Region.objects.get(
+                        Q(name__iexact=region) | Q(code__iexact=region))
                     regions_resolved.append(region_resolved)
                 except ObjectDoesNotExist:
                     regions_unresolved.append(region)
@@ -771,8 +772,8 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                                            name="Remote Thumbnail",
                                            mime='image/png',
                                            link_type='image',
-                                           )
-                                       )
+            )
+            )
             Layer.objects.filter(id=instance.id) \
                 .update(thumbnail_url=thumbnail_remote_url)
             # Download thumbnail and save it locally.
