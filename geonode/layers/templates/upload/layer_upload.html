@@ -104,27 +104,26 @@
     </section>
 
     <section class="project">
+      <h4>{% trans "Project Association" %}</h4>
       <p>{% trans "Select the associated project" %}</p>
-      <select id="project" name="project">
+      <select id="project" name="project" >
         {% for project in projects %}
-          {% if project.id == 1 %}
-            <option selected='True' value={{ project.id }}>{{project.title}}</option>
-          {% else %}
-            <option value={{ project.id }}>{{ project.title }}</option>
-          {% endif %}
+          <option {% if project.id == 1 %} selected {% endif %} value="{{ project.id }}">{{ project.title }}</option>
         {% endfor %}
       </select>
     </section>
 
-    <section class="commercialisation">
-      <p>{% trans "Commercialisation" %}</p>
-      <div class="checkbox" id="free">
-        Free
-        <input type="checkbox" name="free" checked="True"/>
+    <section class="commercialization">
+      <h4>{% trans "Commercialization" %}</h4>
+      <div class="checkbox row" id="free">
+        <span>Free for download</span>
+        <span>
+          <input type="checkbox" name="free" checked />
+        </span>
       </div>
-      <div class="price">
+      <div class="price" id="price">
         <p>Price of layer</p>
-        <input type="number" min="0" placeholder=0>
+        <input type="number" name="price" min="0" placeholder=0>
       </div>
     </section>
 

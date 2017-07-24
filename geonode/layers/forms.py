@@ -102,6 +102,9 @@ class LayerUploadForm(forms.Form):
     charset = forms.CharField(required=False)
     metadata_uploaded_preserve = forms.BooleanField(required=False)
     metadata_upload_form = forms.BooleanField(required=False)
+    project = forms.IntegerField()
+    free = forms.BooleanField(required=False)
+    price = forms.IntegerField()
 
     spatial_files = (
         "base_file",

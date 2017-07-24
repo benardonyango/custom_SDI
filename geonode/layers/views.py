@@ -141,7 +141,7 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
 @login_required
 def layer_upload(request, template='upload/layer_upload.html'):
     if request.method == 'GET':
-        project_form = ProjectSelectForm()
+        # project_form = ProjectSelectForm()
         projects = Project.objects.all()
         mosaics = Layer.objects.filter(is_mosaic=True).order_by('name')
         ctx = {
@@ -184,7 +184,11 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     metadata_uploaded_preserve=form.cleaned_data[
                         "metadata_uploaded_preserve"],
                     metadata_upload_form=form.cleaned_data[
-                        "metadata_upload_form"]
+                        "metadata_upload_form"],
+                    project=Project.objects.get(
+                        pk=form.cleaned_data["project"]),
+                    free=form.cleaned_data["free"],
+                    price=form.cleaned_data["price"]
                 )
             except Exception as e:
                 exception_type, error, tb = sys.exc_info()
@@ -310,7 +314,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             granules = cat.mosaic_granules(coverages['coverages']['coverage'][0]['name'], store, limit=10,
                                            offset=offset, filter=filter)
             all_granules = cat.mosaic_granules(coverages['coverages']['coverage'][
-                                               0]['name'], store, filter=filter)
+                0]['name'], store, filter=filter)
         except:
             granules = {"features": []}
             all_granules = {"features": []}

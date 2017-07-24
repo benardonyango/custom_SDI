@@ -153,7 +153,7 @@ class LayersTest(TestCase):
         '''/data/geonode:CA/metadata -> Test accessing the description of a layer '''
         self.assertEqual(8, get_user_model().objects.all().count())
         response = self.client.get(
-            reverse('layer_metadakta', args=('geonode:CA',)))
+            reverse('layer_metadata', args=('geonode:CA',)))
         # Since we are not authenticated, we should not be able to access it
         self.failUnlessEqual(response.status_code, 302)
         # but if we log in ...

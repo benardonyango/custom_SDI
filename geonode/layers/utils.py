@@ -371,13 +371,18 @@ def extract_tarfile(upload_file, extension='.shp', tempdir=None):
     return absolute_base_file
 
 
-def file_upload(filename, name=None, user=None, title=None, abstract=None,
+def file_upload(filename,
+                project,
+                free,
+                price,
+                name=None, user=None, title=None, abstract=None,
                 license=None,
                 category=None, keywords=None, regions=None,
                 date=None,
                 skip=True, overwrite=False, charset='UTF-8',
                 metadata_uploaded_preserve=False,
-                metadata_upload_form=False):
+                metadata_upload_form=False,
+                ):
     """Saves a layer in GeoNode asking as little information as possible.
        Only filename is required, user and title are optional.
     """
@@ -461,7 +466,10 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
         'bbox_y1': bbox_y1,
         'is_published': is_published,
         'license': license,
-        'category': category
+        'category': category,
+        'project': project,
+        'free': free,
+        'price': price
     }
 
     # set metadata
