@@ -39,6 +39,10 @@ autocomplete_light.autodiscover()  # flake8: noqa
 
 
 class ProjectSelectForm(forms.Form):
+    # project = forms.IntegerField(required=False)
+    free = forms.BooleanField(required=False)
+    price = forms.IntegerField(required=False)
+
     project = forms.ModelChoiceField(
         empty_label="Project",
         label=("Project"),
@@ -102,9 +106,9 @@ class LayerUploadForm(forms.Form):
     charset = forms.CharField(required=False)
     metadata_uploaded_preserve = forms.BooleanField(required=False)
     metadata_upload_form = forms.BooleanField(required=False)
-    project = forms.IntegerField()
+    project = forms.IntegerField(required=False)
     free = forms.BooleanField(required=False)
-    price = forms.IntegerField()
+    price = forms.IntegerField(required=False)
 
     spatial_files = (
         "base_file",
@@ -116,6 +120,10 @@ class LayerUploadForm(forms.Form):
         cleaned = super(LayerUploadForm, self).clean()
         dbf_file = shx_file = prj_file = xml_file = None
         base_name = base_ext = None
+
+        # print '\nProject : {},\nFree : {},\nPrice : {}\n'.format(
+        #     cleaned['project'], cleaned['free'], cleaned['price'])
+
         if zipfile.is_zipfile(cleaned["base_file"]):
             filenames = zipfile.ZipFile(cleaned["base_file"]).namelist()
             for filename in filenames:
@@ -219,6 +227,9 @@ class NewLayerUploadForm(LayerUploadForm):
     permissions = JSONField()
     charset = forms.CharField(required=False)
     metadata_uploaded_preserve = forms.BooleanField(required=False)
+    project = forms.IntegerField(required=False)
+    free = forms.BooleanField(required=False)
+    price = forms.IntegerField(required=False)
 
     spatial_files = [
         "base_file",
@@ -237,13 +248,6 @@ class NewLayerUploadForm(LayerUploadForm):
 
 
 class LayerDescriptionForm(forms.Form):
-    project = forms.ModelChoiceField(
-        empty_label="Project",
-        label=("Project"),
-        required=False,
-        queryset=Project.objects.all(),
-        initial=settings.DEFAULT_PROJECT,
-        widget=autocomplete_light.ChoiceWidget('ProjectAutocomplete'))
     title = forms.CharField(300)
     abstract = forms.CharField(1000, widget=forms.Textarea, required=False)
     keywords = forms.CharField(500, required=False)

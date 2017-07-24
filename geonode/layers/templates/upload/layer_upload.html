@@ -103,33 +103,35 @@
       </select>
     </section>
 
-    <section class="project">
-      <h4>{% trans "Project Association" %}</h4>
-      <p>{% trans "Select the associated project" %}</p>
-      <select id="project" name="project" >
-        {% for project in projects %}
-          <option {% if project.id == 1 %} selected {% endif %} value="{{ project.id }}">{{ project.title }}</option>
-        {% endfor %}
-      </select>
-    </section>
+    <form action="" method="post" id="commercial">
+      <section class="project">
+        <h4>{% trans "Project Association" %}</h4>
+        <p>{% trans "Select the associated project" %}</p>
+        <select id="project" name="project" >
+          {% for project in projects %}
+            <option {% if project.id == 1 %} selected {% endif %} value="{{ project.id }}">{{ project.title }}</option>
+          {% endfor %}
+        </select>
+      </section>
 
-    <section class="commercialization">
-      <h4>{% trans "Commercialization" %}</h4>
-      <div class="checkbox row" id="free">
-        <span>Free for download</span>
-        <span>
-          <input type="checkbox" name="free" checked />
-        </span>
-      </div>
-      <div class="price" id="price">
-        <p>Price of layer</p>
-        <input type="number" name="price" min="0" placeholder=0>
-      </div>
-    </section>
+      <section class="commercialization">
+        <h4>{% trans "Commercialization" %}</h4>
+        <div class="checkbox row" id="free">
+          <span>Free for download</span>
+          <span>
+            <input type="checkbox" name="free" checked />
+          </span>
+        </div>
+        <div class="price" id="price">
+          <p>Price of layer</p>
+          <input type="number" name="price" min="0" placeholder=0>
+        </div>
+      </section>
+    </form>
 
     <section>
       <a href="{% url "layer_upload" %}" id="clear-button" class="btn btn-default">{% trans "Clear" %}</a>
-      <a href="#" id="upload-button" class="btn btn-danger">{% trans "Upload files" %}</a>
+      <a href="#" id="upload-button" class="btn btn-danger" type="submit" form="commercial">{% trans "Upload files" %}</a>
     </section>
   </div>
 

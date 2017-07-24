@@ -586,6 +586,15 @@ def file_upload(filename,
     if saveAgain:
         layer.save()
 
+    # Hack, for future reference:
+    # After saving layer in geoserver append commercialization properties!
+
+    # layer.free = free
+    # layer.price = price
+    # layer.project = project
+
+    # layer.save()
+
     return layer
 
 

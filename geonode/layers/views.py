@@ -141,22 +141,34 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
 @login_required
 def layer_upload(request, template='upload/layer_upload.html'):
     if request.method == 'GET':
-        # project_form = ProjectSelectForm()
         projects = Project.objects.all()
+        commercial = ProjectSelectForm()
         mosaics = Layer.objects.filter(is_mosaic=True).order_by('name')
         ctx = {
             'mosaics': mosaics,
             'charsets': CHARSETS,
             'is_layer': True,
             'projects': projects,
+            'commercial': commercial,
         }
         return render_to_response(template, RequestContext(request, ctx))
     elif request.method == 'POST':
         form = NewLayerUploadForm(request.POST, request.FILES)
+        commercial = ProjectSelectForm(request.POST)
         tempdir = None
         errormsgs = []
         out = {'success': False}
-        if form.is_valid():
+        if form.is_valid() and commercial.is_valid():
+            # project = commercial.cleaned_data['project']
+            # free = commercial.cleaned_data['free']
+            # price = commercial.cleaned_data['price']
+            project = Project.objects.get(pk=request.POST.get('project', 1))
+            free = request.POST.get('free', True)
+            price = request.POST.get('price', 0)
+
+            print '\nProject : {},\nFree : {},\nPrice : {}\n'.format(
+                project, free, price)
+
             title = form.cleaned_data["layer_title"]
             # Replace dots in filename - GeoServer REST API upload bug
             # and avoid any other invalid characters.
@@ -175,6 +187,9 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 tempdir, base_file = form.write_files()
                 saved_layer = file_upload(
                     base_file,
+                    project=project,
+                    free=free,
+                    price=price,  # using dummies
                     name=name,
                     user=request.user,
                     overwrite=False,
@@ -184,11 +199,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     metadata_uploaded_preserve=form.cleaned_data[
                         "metadata_uploaded_preserve"],
                     metadata_upload_form=form.cleaned_data[
-                        "metadata_upload_form"],
-                    project=Project.objects.get(
-                        pk=form.cleaned_data["project"]),
-                    free=form.cleaned_data["free"],
-                    price=form.cleaned_data["price"]
+                        "metadata_upload_form"]
                 )
             except Exception as e:
                 exception_type, error, tb = sys.exc_info()
